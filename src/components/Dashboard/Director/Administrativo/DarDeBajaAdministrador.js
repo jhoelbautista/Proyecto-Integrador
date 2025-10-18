@@ -1,0 +1,85 @@
+import React, { useState } from 'react';
+
+const mockAdministrativos = [
+  { id: 1, apellidoPaterno: 'Lopez', apellidoMaterno: 'Fernandez', nombres: 'María Elena', ci: '12345678' },
+  { id: 2, apellidoPaterno: 'García', apellidoMaterno: 'Rojas', nombres: 'Luis Alberto', ci: '87654321' },
+  { id: 3, apellidoPaterno: 'Perez', apellidoMaterno: 'Castro', nombres: 'Ana Sofía', ci: '11223344' },
+];
+
+const DarDeBajaAdministrador = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [administrativos, setAdministrativos] = useState(mockAdministrativos);
+
+  const filteredAdministrativos = administrativos.filter(({ apellidoPaterno, apellidoMaterno, nombres, ci }) => {
+    const search = searchTerm.toLowerCase();
+    return (
+      apellidoPaterno.toLowerCase().includes(search) ||
+      apellidoMaterno.toLowerCase().includes(search) ||
+      nombres.toLowerCase().includes(search) ||
+      ci.includes(search)
+    );
+  });
+
+  const handleDarDeBaja = (id) => {
+    const admin = administrativos.find(adm => adm.id === id);
+    if (!window.confirm(`¿Está seguro que desea dar de baja al administrativo ${admin.nombres} ${admin.apellidoPaterno}? Esta acción es irreversible.`)) {
+      return;
+    }
+    setAdministrativos(administrativos.filter(adm => adm.id !== id));
+    alert(`Administrativo ${admin.nombres} ${admin.apellidoPaterno} dado de baja correctamente.`);
+  };
+
+  return (
+    <div className="w-[900px] h-[750px] bg-white shadow-xl p-10 rounded-2xl overflow-y-auto">
+      <h3 className="text-xl font-semibold mb-4">Dar de Baja a Administrativo</h3>
+
+      <input
+        type="text"
+        placeholder="Buscar administrativo por nombre o CI"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="mb-6 p-3 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-red-400"
+      />
+
+      <table className="min-w-full bg-white border border-gray-200 rounded">
+        <thead>
+          <tr className="bg-gray-100 text-left">
+            <th className="py-3 px-5 border-b">Apellido Paterno</th>
+            <th className="py-3 px-5 border-b">Apellido Materno</th>
+            <th className="py-3 px-5 border-b">Nombres</th>
+            <th className="py-3 px-5 border-b">CI</th>
+            <th className="py-3 px-5 border-b">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredAdministrativos.length > 0 ? (
+            filteredAdministrativos.map((adm) => (
+              <tr key={adm.id} className="hover:bg-gray-50">
+                <td className="py-3 px-5 border-b">{adm.apellidoPaterno}</td>
+                <td className="py-3 px-5 border-b">{adm.apellidoMaterno}</td>
+                <td className="py-3 px-5 border-b">{adm.nombres}</td>
+                <td className="py-3 px-5 border-b">{adm.ci}</td>
+                <td className="py-3 px-5 border-b">
+                  <button
+                    onClick={() => handleDarDeBaja(adm.id)}
+                    className="bg-red-600 text-white px-4 py-2 rounded-md text-sm hover:bg-red-700 transition-all border border-red-400"
+                  >
+                    Dar de Baja
+                  </button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="5" className="text-center py-6 text-gray-500">
+                No se encontraron administrativos.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default DarDeBajaAdministrador;
